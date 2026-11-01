@@ -1,0 +1,20 @@
+{
+    "$schema": "https://moddbcdn.vintagestory.at/schema/modinfo.latest.json",
+    "type": "Code",
+    "modid": "lastingarmorfixed",
+    "name": "LastingArmorFixed",
+    "authors": [
+        "NerArth"
+    ],
+    "contributors": [
+        "faijak"
+    ],
+    "side": "Server",
+    "description": "Makes armor last a lifetime. (20x durability default)",
+    "version": "1.0.0",
+    "requiredOnClient": false,
+    "requiredOnServer": true,
+    "dependencies": {
+        "game": "1.22.0"
+    }
+}
