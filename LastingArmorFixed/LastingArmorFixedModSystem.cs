@@ -13,15 +13,18 @@ namespace LastingArmorFixed
 
         public override void StartPre(ICoreAPI api)
         {
-            Mod.Logger.Event("Lasting Armor: Running pre-init phase...");
+            if (api.Side.IsServer())
+            {
+                Mod.Logger.Event("Lasting Armor: Running pre-init phase...");
 
-            ModConfig = LoadConfiguration(api);
+                ModConfig = LoadConfiguration(api);
 
-            Mod.Logger.Event("Lasting Armor: Applying world config Harmony postfix...");
-            HI.Patch(
-                AccessTools.Method(typeof(SurvivalCoreSystem), "applyConfig"),
-                postfix: new HarmonyMethod(typeof(ApplyConfigPostfix), "Postfix")
-            );
+                Mod.Logger.Event("Lasting Armor: Applying world config Harmony postfix...");
+                HI.Patch(
+                    AccessTools.Method(typeof(SurvivalCoreSystem), "applyConfig"),
+                    postfix: new HarmonyMethod(typeof(ApplyConfigPostfix), "Postfix")
+                );
+            }
         }
 
         public override void Dispose()
@@ -77,14 +80,17 @@ namespace LastingArmorFixed
                 multiplier = modSystem?.ModConfig?.DurabilityMultiplier ?? 20;
                 api.Logger.Debug("LastingArmor: Not using world durability scaling.");
             }
-            
-            foreach (CollectibleObject collectible in api.World.Collectibles)
+
+            if (api.Side.IsServer())
             {
-                var isWearable = collectible.CollectibleBehaviors.Any(behavior => behavior is CollectibleBehaviorWearable);
-                if (isWearable && collectible.Durability > 1)
+                foreach (CollectibleObject collectible in api.World.Collectibles)
                 {
-                    collectible.Durability = (int)((float)collectible.Durability * multiplier);
-                    api.Logger.Debug("Lasting Armor: Final durability set to {0} for [{1}]", collectible.Durability, collectible.Code);
+                    var isWearable = collectible.CollectibleBehaviors.Any(behavior => behavior is CollectibleBehaviorWearable);
+                    if (isWearable && collectible.Durability > 1)
+                    {
+                        collectible.Durability = (int)((float)collectible.Durability * multiplier);
+                        api.Logger.Debug("Lasting Armor: Final durability set to {0} for [{1}]", collectible.Durability, collectible.Code);
+                    }
                 }
             }
         }
